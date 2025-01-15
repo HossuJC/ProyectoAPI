@@ -3,8 +3,31 @@ import { getItemById, getItemsBySearch, getItems, createItem, updateItem, delete
 
 const itemRouter = express.Router();
 
-itemRouter.get('/search', getItemsBySearch);
-itemRouter.get('/:id', getItemById);
+itemRouter.get('/search', (req, res) => {
+    getItemsBySearch(req.query).then((data) => {
+        if (data.length) {
+            res.status(200).json(data);
+        } else {
+            res.status(404).json({message: "Item not found."});
+        }
+    }).catch((err) => {
+        console.error("Error on GET /search route:", err);
+        res.status(500).json({message: err});
+    });
+});
+
+itemRouter.get('/:id', (req, res) => {
+    getItemById(req.params.id).then((data) => {
+        if (data) {
+            res.status(200).json(data);
+        } else {
+            res.status(404).json({message: "Item not found."});
+        }
+    }).catch((err) => {
+        console.error("Error on GET /:id route:", err);
+        res.status(500).json({message: err});
+    });
+});
 
 itemRouter.get('/', (req, res) => {
     getItems().then((data) => {

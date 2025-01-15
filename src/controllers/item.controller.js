@@ -1,4 +1,6 @@
+import { Op } from "sequelize";
 import Item from "../models/item.model.js";
+
 let id = 0;
 
 export const getItems = async () => {
@@ -6,14 +8,37 @@ export const getItems = async () => {
     return data;
 }
 
-export const getItemById = (req, res) => {
-    const params = req.params; // {id: 10}
-    res.send(`Obteniendo el item con ID ${params?.id}`);
+export const getItemById = async (id) => {
+    let data = await Item.findByPk(id);
+    return data;
 }
 
-export const getItemsBySearch = (req, res) => {
-    const queryParams = req.query;
-    res.send(`Obteniendo item que cumplan con la búsqueda: ${JSON.stringify(queryParams)}`);
+export const getItemsBySearch = async (filters) => {
+    let whereFilters = {}
+
+    if (filters.name) {
+        Object.assign(whereFilters, {
+            name: {
+                [Op.iLike]: `%${filters.name}%`
+            }
+        });
+    }
+    if (filters.category) {
+        Object.assign(whereFilters, { category: filters.category });
+    }
+    if (filters.maxPrice || filters.minPrice) {
+        Object.assign(whereFilters, { price: {
+            [Op.gte]: filters.minPrice ?? 0,
+            [Op.lte]: filters.maxPrice ?? 9999999
+        } });
+    }
+
+    let data = await Item.findAll({
+        where: {
+            [Op.and]: whereFilters
+        }
+    });
+    return data;
 }
 
 export const createItem = async (body) => {
