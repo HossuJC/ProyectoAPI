@@ -55,11 +55,22 @@ itemRouter.put('/:id', (req, res) => {
             res.status(400).json({message: "Item not updated.", data: data});
         }
     }).catch((err) => {
-        console.error("Error on PUT / route:", err);
+        console.error("Error on PUT /:id route:", err);
         res.status(500).json({message: err});
     });
 });
 
-itemRouter.delete('/:id', deleteItem);
+itemRouter.delete('/:id', (req, res) => {
+    deleteItem(req.params.id).then((data) => {
+        if (data) {
+            res.status(200).json({message: "Item deleted.", data: data});
+        } else {
+            res.status(400).json({message: "Item not deleted.", data: data});
+        }
+    }).catch((err) => {
+        console.error("Error on DELETE /:id route:", err);
+        res.status(500).json({message: err});
+    })
+});
 
 export default itemRouter;
