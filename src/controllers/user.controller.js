@@ -2,12 +2,20 @@ import { Op } from "sequelize";
 import User from "../models/user.model.js";
 
 export const getUsers = async () => {
-    let data = await User.findAll();
+    let data = await User.findAll({
+        attributes: {
+            exclude: ['password']
+        }
+    });
     return data;
 }
 
 export const getUserById = async (id) => {
-    let data = await User.findByPk(id);
+    let data = await User.findByPk(id, {
+        attributes: {
+            exclude: ['password']
+        }
+    });
     return data;
 }
 
@@ -44,6 +52,9 @@ export const getUsersBySearch = async (filters) => {
     }
 
     let data = await User.findAll({
+        attributes: {
+            exclude: ['password']
+        },
         where: {
             [Op.and]: whereFilters
         }
