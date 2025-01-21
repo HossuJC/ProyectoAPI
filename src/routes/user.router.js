@@ -1,5 +1,5 @@
 import express from "express";
-import { getUserById, getUsersBySearch, getUsers, createUser, updateUser, deleteUser } from '../controllers/user.controller.js';
+import { getUserById, getUsersBySearch, getUsers, createUser, updateUser, deleteUser, patchUser } from '../controllers/user.controller.js';
 
 const userRouter = express.Router();
 
@@ -56,6 +56,19 @@ userRouter.put('/:id', (req, res) => {
         }
     }).catch((err) => {
         console.error("Error on PUT /:id route:", err);
+        res.status(500).json({message: err});
+    });
+});
+
+userRouter.patch('/:id', (req, res) => {
+    patchUser(req.params.id, req.body).then((data) => {
+        if (data) {
+            res.status(201).json({message: "User updated.", data: data});
+        } else {
+            res.status(400).json({message: "User not updated.", data: data});
+        }
+    }).catch((err) => {
+        console.error("Error on PATCH /:id route:", err);
         res.status(500).json({message: err});
     });
 });
