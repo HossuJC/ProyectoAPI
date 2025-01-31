@@ -1,5 +1,5 @@
 import express from "express";
-import { signUp } from "../controllers/auth.contoller.js";
+import { signUp, logIn } from "../controllers/auth.contoller.js";
 
 const authRouter = express.Router();
 
@@ -9,6 +9,15 @@ authRouter.post('/signUp', (req, res) => {
     }).catch((err) => {
         console.error("Error on POST /signUp route:", err);
         res.status(500).json({ message: err });
+    });
+});
+
+authRouter.post('/logIn', (req, res) => {
+    logIn(req.body).then((data) => {
+        res.status(200).json(data);
+    }).catch((err) => {
+        console.error("Error on POST /logIn route:", err);
+        res.status(500).json({ message: err.message });
     });
 });
 

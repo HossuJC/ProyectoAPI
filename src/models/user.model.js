@@ -30,6 +30,11 @@ const User = sequelize.define(modelName, {
         validate: {
             isBefore: new Date().toISOString()
         }
+    },
+    role: {
+        type: DataTypes.ENUM('admin', 'employee', 'client'),
+        allowNull: false,
+        defaultValue: 'client'
     }
 });
 

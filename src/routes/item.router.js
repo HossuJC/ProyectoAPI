@@ -1,9 +1,10 @@
 import express from "express";
 import { getItemById, getItemsBySearch, getItems, createItem, updateItem, deleteItem } from '../controllers/item.controller.js';
+import { isAdmin, isClient, isEmployee } from "../middlewares/auth.js";
 
 const itemRouter = express.Router();
 
-itemRouter.get('/search', (req, res) => {
+itemRouter.get('/search', isClient, (req, res) => {
     getItemsBySearch(req.query).then((data) => {
         if (data.length) {
             res.status(200).json(data);
@@ -38,7 +39,7 @@ itemRouter.get('/', (req, res) => {
     });
 });
 
-itemRouter.post('/', (req, res) => {
+itemRouter.post('/', isEmployee, (req, res) => {
     createItem(req.body).then((data) => {
         res.status(201).json(data);
     }).catch((err) => {
@@ -47,7 +48,7 @@ itemRouter.post('/', (req, res) => {
     });
 });
 
-itemRouter.put('/:id', (req, res) => {
+itemRouter.put('/:id', isEmployee, (req, res) => {
     updateItem(req.params.id, req.body).then((data) => {
         if (data) {
             res.status(201).json({message: "Item updated.", data: data});
@@ -60,7 +61,7 @@ itemRouter.put('/:id', (req, res) => {
     });
 });
 
-itemRouter.delete('/:id', (req, res) => {
+itemRouter.delete('/:id', isAdmin, (req, res) => {
     deleteItem(req.params.id).then((data) => {
         if (data) {
             res.status(200).json({message: "Item deleted.", data: data});
@@ -70,7 +71,7 @@ itemRouter.delete('/:id', (req, res) => {
     }).catch((err) => {
         console.error("Error on DELETE /:id route:", err);
         res.status(500).json({message: err});
-    })
+    });
 });
 
 export default itemRouter;
